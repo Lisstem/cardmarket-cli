@@ -8,7 +8,7 @@ I am not liable for any damages related to this software (See [licence](#License
 1. Install [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
 2. Install the [Bundler Gem](https://bundler.io/)
 ```
-gem install Bundler
+gem install bundler
 ```
 3. Clone the repository
 ```
