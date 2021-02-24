@@ -20,7 +20,7 @@ class Wantslist < Entity
   def initialize(id, name, account, params = {})
     super(account)
     @id = id
-    @params = params.keep_if { |key, _| PARAMS.include? key }
+    @params = params.select { |key, _| PARAMS.include? key }
     @params[:name] = name
     Wantslist.send(:add, self)
   end
@@ -75,8 +75,8 @@ class Wantslist < Entity
   end
   
   def create_items
-    new_items = items.keep_if { |item| !item.id && !item.meta? }
-    new_meta_items = item.keep_if { |item| !item.id && item.meta? }
+    new_items = @items.select { |item| !item.id && !item.meta? }
+    new_meta_items = @items.select{ |item| !item.id && item.meta? }
     return nil if new_items.empty? && new_meta_items.empty?
 
     @account.post(path, body: { action: 'addItem',
@@ -85,16 +85,16 @@ class Wantslist < Entity
   end
 
   def update_items
-    changed_items = items.keep_if(&:changed?)
+    changed_items = @items.select(&:changed?)
     return nil if changed_items.empty?
 
     @account.post(path, body: { action: 'editItem', want: changed_items.map!(&:to_xml_hash) })
   end
 
   def delete_items
-    return nil if deleted_items.empty?
+    return nil if @deleted_items.empty?
 
-    @account.post(path, body: { action: 'deleteItem', want: deleted_items.map! { |item| { idWant: item.id } } })
+    @account.post(path, body: { action: 'deleteItem', want: @deleted_items.map { |item| { idWant: item.id } } })
   end
 
   class << self

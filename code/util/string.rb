@@ -6,7 +6,7 @@
 # See https://apidock.com/rails/String/underscore
 # See https://apidock.com/rails/String/camelize
 class String
-  def camelize(uppercase_first_letter = true)
+  def camelize(uppercase_first_letter: false)
     string = self
     string = if uppercase_first_letter
                string.sub(/^[a-z\d]*/, &:capitalize)

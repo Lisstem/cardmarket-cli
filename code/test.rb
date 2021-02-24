@@ -15,4 +15,6 @@ account = Account.new(config['APP_TOKEN'], config['APP_SECRET'], config['ACCESS_
 #                                                             RootName: 'request', XmlDeclaration: true))
 # puts response.inspect
 # puts JSON.parse(response.response_body)['wantslist']
-puts JSON.parse(Wantslist.new(2_112_277, nil, account).read.response_body).to_yaml
+list = Wantslist.new(2_112_277, nil, account)
+list.read
+puts list.to_yaml

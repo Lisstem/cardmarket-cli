@@ -18,11 +18,6 @@ class Entity
 
     def attr_r(*symbols)
       symbols.each do |symbol|
-        define_method "#{symbol}=" do |val|
-          @params[symbol] = val
-          @changed = true
-        end
-
         define_method symbol do
           @params[symbol]
         end
