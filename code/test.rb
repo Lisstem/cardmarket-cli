@@ -6,7 +6,7 @@ require 'xmlsimple'
 require_relative 'account'
 require_relative 'entities/wantslist'
 
-secrets = JSON.parse(File.read('secrets.json'))
+secrets = JSON.parse(File.read('config.json'))
 account = Account.new(secrets['APP_TOKEN'], secrets['APP_SECRET'], secrets['ACCESS_TOKEN'],
                       secrets['ACCESS_TOKEN_SECRET'])
 # response = account.get('account')

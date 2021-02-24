@@ -1,0 +1,6 @@
+{
+  "APP_TOKEN": "<app token>",
+  "APP_SECRET": "<app secret>",
+  "ACCESS_TOKEN": "<access token>",
+  "ACCESS_TOKEN_SECRET": "<access token secret>"
+}
