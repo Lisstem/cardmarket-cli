@@ -18,7 +18,7 @@ class WantslistItem < Entity
                is_altered: nil, is_playset: nil, is_signed: nil, is_first_ed: nil }.merge!(params)
     super(account)
     @product = product
-    @params = params.select { |key, _| PARAMS.include? key }
+    @params = params.slice(*PARAMS)
     @changed = false
     @id = id
   end
@@ -27,7 +27,7 @@ class WantslistItem < Entity
     hash = params.transform_keys { |key| key.to_s.camelize }
     hash['idLanguage'] = hash.delete('languages')
     hash['idWant'] = id
-    hash.delete_if { |_, value| value.nil? || value.empty? }
+    hash.delete_if { |_, value| value&.empty? }
 
     add_product_id(hash) if id.nil?
     hash
@@ -54,11 +54,10 @@ class WantslistItem < Entity
 
     def create_product(account, hash)
       if hash['type'] == 'metaproduct'
-        MetaProduct.from_hash(account, { 'fromPrice' => hash['fromPrice'] }.merge!(hash['metaproduct']))
+        MetaProduct.from_hash(account, hash.slice('fromPrice').merge!(hash['metaproduct']))
       else
-        Product.from_hash(account, hash.select do |key, _|
-          %w[rarity expansionName countArticles countFoils fromPrice].include?(key)
-        end.merge!(hash['product'] || {}))
+        Product.from_hash(account, hash.slice(*%w[rarity expansionName countArticles countFoils fromPrice])
+                                       .merge!(hash['product']))
       end
     end
   end

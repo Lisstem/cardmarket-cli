@@ -10,7 +10,7 @@ require_relative '../util/logger'
 # see https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Wantslist
 class Wantslist < Entity
   extend Deletable
-  
+
   PARAMS = [:name].freeze
   PATH_BASE = 'wantslist'
   attr_(*PARAMS)
@@ -20,11 +20,11 @@ class Wantslist < Entity
   def initialize(id, name, account, params = {})
     super(account)
     @id = id
-    @params = params.select { |key, _| PARAMS.include? key }
+    @params = params.slice(*PARAMS)
     @params[:name] = name
     Wantslist.send(:add, self)
   end
-  
+
   def path
     "#{PATH_BASE}/#{id}"
   end
@@ -32,7 +32,7 @@ class Wantslist < Entity
   def read
     LOGGER.debug("Reading wantslist #{name}(#{id})")
     return unless id
-    
+
     response = @account.get(path)
     hash = JSON.parse(response.response_body)['wantslist']
 
@@ -49,39 +49,42 @@ class Wantslist < Entity
 
     @account.delete(path, body: { action: 'deleteWantslist' })
   end
-  
+
   def update
     LOGGER.debug("Updating wantslist #{name}(#{id})")
     responses = {}
     responses[:create] = create unless id
     responses[:update] = path if changed?
-
-    responses[:create_items] = create_items
-    responses[:update_items] = update_items
-    responses[:delete_items] = delete_items
+    patch_items(responses)
     responses.compact!
   end
 
   private
-   
+  
+  def patch_items(responses)
+    responses[:create_items] = create_items
+    responses[:update_items] = update_items
+    responses[:delete_items] = delete_items
+    responses
+  end
+
   def create
     response = @account.post(PATH_BASE, body: { wantslist: { name: name, idGame: 1 } })
     @id = JSON.parse(response)['wantslist']&.fetch(0)&.fetch('idWantsList')
     response
   end
-  
+
   def patch
     @account.post(path, body: { action: 'editWantslist', name: name })
   end
-  
+
   def create_items
-    new_items = @items.select { |item| !item.id && !item.meta? }
-    new_meta_items = @items.select{ |item| !item.id && item.meta? }
-    return nil if new_items.empty? && new_meta_items.empty?
+    new_items = @items.reject(&:id)
+    return nil if new_items.empty?
 
     @account.post(path, body: { action: 'addItem',
-                                product: new_items.map!(&:to_xml_hash),
-                                metaproduct: new_meta_items.map!(&:to_xml_hash) })
+                                product: new_items.reject(&:meta).map!(&:to_xml_hash),
+                                metaproduct: new_items.select(&:meta?).map!(&:to_xml_hash) })
   end
 
   def update_items
@@ -113,7 +116,7 @@ class Wantslist < Entity
       end
       instances
     end
-    
+
     def update
       instances.each(&:update)
       deleted_instances.each(&:delete)

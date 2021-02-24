@@ -30,7 +30,7 @@ class MetaProduct < Entity
   private
 
   def merge_params(params)
-    @params.merge!(params.select { |key, _| PARAMS.include? key })
+    @params.merge!(params.slice(*PARAMS))
     self
   end
 

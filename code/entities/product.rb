@@ -26,7 +26,7 @@ class Product < Entity
   private
 
   def merge_params(params)
-    @params.merge!(params.select { |key, _| PARAMS.include? key })
+    @params.merge!(params.slice(*PARAMS))
     @params[:rarity] = @params[:rarity].to_s.downcase!.to_sym
     self
   end
@@ -36,13 +36,13 @@ class Product < Entity
     uniq_attr :instance
 
     private :new
-    
+
     def from_hash(account, hash)
       hash.transform_keys! { |key| key.underscore.to_sym }
       hash[:meta_product] = MetaProduct.create(hash.delete(:id_metaproduct), account)
       Product.create(hash[:id_product], account, hash)
     end
-    
+
     def create(id, account, params = {})
       self[id]&.send(:merge_params, params) || new(id, account, params)
     end

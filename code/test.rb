@@ -10,11 +10,8 @@ config = JSON.parse(File.read('config.json'))
 LOGGER.level = config['LOGGING_LEVEL'] || :info
 account = Account.new(config['APP_TOKEN'], config['APP_SECRET'], config['ACCESS_TOKEN'],
                       config['ACCESS_TOKEN_SECRET'])
-# response = account.get('account')
-# response = account.post('wantslist', body: XmlSimple.xml_out({ wantslist: { name: 'test', idGame: 1 } },
-#                                                             RootName: 'request', XmlDeclaration: true))
-# puts response.inspect
-# puts JSON.parse(response.response_body)['wantslist']
-list = Wantslist.new(2_112_277, nil, account)
-list.read
-puts list.to_yaml
+# list = Wantslist.new(2_112_277, nil, account)
+# list.read
+# puts list.to_yaml
+puts account.get('products/find', params: { search: 'Springleaf Drum', exact: true, idGame: 1, idLanguage: 1 }).to_yaml
+# puts account.get(Wantslist::PATH_BASE).to_yaml
