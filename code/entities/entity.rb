@@ -3,9 +3,10 @@
 ##
 # Base for all entites in the API
 class Entity
-  def initialize
+  def initialize(account)
     @changed = false
     @params = {}
+    @account = account
   end
 
   def changed?
@@ -15,7 +16,7 @@ class Entity
   class << self
     protected
 
-    def attr_(*symbols)
+    def attr_r(*symbols)
       symbols.each do |symbol|
         define_method "#{symbol}=" do |val|
           @params[symbol] = val
@@ -27,5 +28,15 @@ class Entity
         end
       end
     end
+    
+    def attr_(*symbols)
+      attr_r(*symbols)
+      symbols.each do |symbol|
+        define_method "#{symbol}=" do |val|
+          @params[symbol] = val
+          @changed = true
+        end
+      end 
+    end 
   end 
 end

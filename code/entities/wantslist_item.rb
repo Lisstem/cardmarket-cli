@@ -3,18 +3,20 @@
 require_relative 'entity'
 require_relative 'product'
 require_relative 'meta_product'
+require_relative '../util/string'
 
 ##
 # see https://api.cardmarket.com/ws/documentation/API_2.0:Wantslist_Item
 class WantslistItem < Entity
-  PARAMS = %i[count min_condition wish_price mail_alert languages foil altered playset signed first_edition].freeze
+  PARAMS = %i[count min_condition wish_price mail_alert languages is_foil is_altered is_playset is_signed 
+              is_first_ed].freeze
   attr_(*PARAMS)
   attr_reader :id
 
-  def initialize(product, id: nil,
-                 params: { count: 1, min_condition: :po, wish_price: 0.0, mail_alert: false, languages: [1], foil: nil,
-                           altered: nil, playset: nil, signed: nil, first_edition: nil })
-    super()
+  def initialize(product, account, id: nil,
+                 params: { count: 1, min_condition: :po, wish_price: 0.0, mail_alert: false, languages: [1],
+                           is_foil: nil, is_altered: nil, is_playset: nil, is_signed: nil, is_first_ed: nil })
+    super(account)
     @product = product
     @params = params.keep_if { |key, _| PARAMS.include? key }
     @changed = false
@@ -22,9 +24,9 @@ class WantslistItem < Entity
   end
 
   def to_xml_hash
-    hash = { idWant: id, minCondition: min_condition.to_s.upcase!, wishPrice: wish_price, mailAlert: mail_alert,
-             idLanguage: languages, isFoil: foil, isAltered: altered, isPlayset: playset, isSigned: signed,
-             isFirstEd: first_edition }
+    hash = params.transform_keys { |key| key.to_s.camelize(false) }
+    hash['idLanguage'] = hash.delete('languages')
+    hash['idWant'] = id
     hash.delete_if { |_, value| value.nil? || value.empty? }
 
     add_product_id(hash) if id.nil?
@@ -39,14 +41,15 @@ class WantslistItem < Entity
     end
   end
 
-  def self.from_hash(hash)
-    product = hash['type'] == 'metaproduct' ? MetaProduct[hash['idMetaproduct']] : Product[hash['idProduct']]
-    min_condition = hash['minCondition'].nil? ? nil : hash['minCondition'].downcase!.to_sym
-    WantslistItem.new(product,
-                      id: hash['idWant'],
-                      params: { count: hash['count'], min_condition: min_condition, wish_price: hash['wish_price'],
-                               mail_alert: hash['mailAlert'], languages: hash['idLanguages'], foil: hash['isFoil'],
-                               altered: hash['isAltered'], playset: hash['isPlayerset'], signed: hash['isSigned'],
-                               first_edition: hash['isFirstEd']})
+  def self.from_hash(account, hash)
+    product = if hash['type'] == 'metaproduct' 
+                MetaProduct.new(hash.delete('idMetaproduct'), account)
+              else
+                Product.new(hash.delete('idProduct'), account)
+              end
+    hash.transform_keys! { |key| key.underscore.to_sym }
+    hash[:min_condition] &&= hash[:min_condition].downcase!.to_sym
+    hash[:languages] = hash[:id_language]
+    WantslistItem.new(product, account, id: hash[:id_want], params: hash)
   end
 end
