@@ -11,11 +11,11 @@ class WantslistItem < Entity
   PARAMS = %i[count min_condition wish_price mail_alert languages is_foil is_altered is_playset is_signed 
               is_first_ed].freeze
   attr_(*PARAMS)
-  attr_reader :id
+  attr_reader :id, :product
 
-  def initialize(product, account, id: nil,
-                 params: { count: 1, min_condition: :po, wish_price: 0.0, mail_alert: false, languages: [1],
-                           is_foil: nil, is_altered: nil, is_playset: nil, is_signed: nil, is_first_ed: nil })
+  def initialize(id, product, account, params = {})
+    params = { count: 1, min_condition: :po, wish_price: 0.0, mail_alert: false, languages: [1], is_foil: nil,
+               is_altered: nil, is_playset: nil, is_signed: nil, is_first_ed: nil }.merge!(params)
     super(account)
     @product = product
     @params = params.keep_if { |key, _| PARAMS.include? key }
@@ -42,7 +42,7 @@ class WantslistItem < Entity
   end
 
   def self.from_hash(account, hash)
-    product = if hash['type'] == 'metaproduct' 
+    product = if hash['type'] == 'metaproduct'
                 MetaProduct.new(hash.delete('idMetaproduct'), account)
               else
                 Product.new(hash.delete('idProduct'), account)
@@ -50,6 +50,6 @@ class WantslistItem < Entity
     hash.transform_keys! { |key| key.underscore.to_sym }
     hash[:min_condition] &&= hash[:min_condition].downcase!.to_sym
     hash[:languages] = hash[:id_language]
-    WantslistItem.new(product, account, id: hash[:id_want], params: hash)
+    WantslistItem.new(hash[:id_want], product, account, hash)
   end
 end

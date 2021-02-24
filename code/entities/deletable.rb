@@ -74,6 +74,11 @@ module Deletable
       instance_variable_set("@#{plural}", hash ? {} : []) unless instance_variable_defined? "@#{plural}"
       instance_variable_get("@#{plural}").dup
     end
+
+    define_method "deleted_#{plural}" do
+      instance_variable_set("@deleted_#{plural}", hash ? {} : []) unless instance_variable_defined? "@deleted_#{plural}"
+      instance_variable_get("@deleted_#{plural}").dup
+    end
   end
 
   def def_brackets(plural, hash)

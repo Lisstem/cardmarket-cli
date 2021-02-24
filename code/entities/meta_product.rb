@@ -8,7 +8,7 @@ require_relative 'entity'
 class MetaProduct < Entity
   attr_reader :id
 
-  def initialize(id, account, params: {})
+  def initialize(id, account, params = {})
     super(account)
     @id = id
     MetaProduct.send(:add, self)
