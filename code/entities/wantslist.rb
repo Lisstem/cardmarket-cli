@@ -11,7 +11,7 @@ require_relative '../util/logger'
 class Wantslist < Entity
   extend Deletable
 
-  PARAMS = [:name].freeze
+  PARAMS = %i[name].freeze
   PATH_BASE = 'wantslist'
   attr_(*PARAMS)
   list_attr :item
@@ -54,7 +54,7 @@ class Wantslist < Entity
     LOGGER.debug("Updating wantslist #{name}(#{id})")
     responses = {}
     responses[:create] = create unless id
-    responses[:update] = path if changed?
+    responses[:update] = patch if changed?
     patch_items(responses)
     responses.compact!
   end
@@ -75,15 +75,15 @@ class Wantslist < Entity
   end
 
   def patch
-    @account.post(path, body: { action: 'editWantslist', name: name })
+    @account.put(path, body: { action: 'editWantslist', name: name })
   end
 
   def create_items
     new_items = @items.reject(&:id)
     return nil if new_items.empty?
 
-    @account.post(path, body: { action: 'addItem',
-                                product: new_items.reject(&:meta).map!(&:to_xml_hash),
+    @account.put(path, body: { action: 'addItem',
+                                product: new_items.reject(&:meta?).map!(&:to_xml_hash),
                                 metaproduct: new_items.select(&:meta?).map!(&:to_xml_hash) })
   end
 
@@ -91,13 +91,13 @@ class Wantslist < Entity
     changed_items = @items.select(&:changed?)
     return nil if changed_items.empty?
 
-    @account.post(path, body: { action: 'editItem', want: changed_items.map!(&:to_xml_hash) })
+    @account.put(path, body: { action: 'editItem', want: changed_items.map!(&:to_xml_hash) })
   end
 
   def delete_items
-    return nil if @deleted_items.empty?
+    return nil if deleted_items.empty?
 
-    @account.post(path, body: { action: 'deleteItem', want: @deleted_items.map { |item| { idWant: item.id } } })
+    @account.put(path, body: { action: 'deleteItem', want: @deleted_items.map { |item| { idWant: item.id } } })
   end
 
   class << self

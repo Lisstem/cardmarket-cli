@@ -10,8 +10,24 @@ config = JSON.parse(File.read('config.json'))
 LOGGER.level = config['LOGGING_LEVEL'] || :info
 account = Account.new(config['APP_TOKEN'], config['APP_SECRET'], config['ACCESS_TOKEN'],
                       config['ACCESS_TOKEN_SECRET'])
-# list = Wantslist.new(2_112_277, nil, account)
+list = Wantslist.new(11828656, nil, account)
 # list.read
 # puts list.to_yaml
-puts account.get('products/find', params: { search: 'Springleaf Drum', exact: true, idGame: 1, idLanguage: 1 }).to_yaml
+product = Product.create(15145, account)
+# list.read
+# puts list.to_yaml
+# list.add_item(item)
+# item = list.items[0]
+# item.count = 4
+# item.min_condition = :NM
+# item.is_playset = true
+# item.mail_alert = true
+# item.from_price = 5
+# item.languages << 1
+# puts list.update.to_yaml
+
+product.read
+puts product.to_yaml
+# puts list.update.to_yaml
+# puts JSON.parse(request.response_body).to_yaml
 # puts account.get(Wantslist::PATH_BASE).to_yaml

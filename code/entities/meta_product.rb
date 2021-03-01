@@ -7,9 +7,9 @@ require_relative 'product'
 ##
 # See https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Metaproduct
 class MetaProduct < Entity
-  PARAMS = %i[en_name loc_name from_price products].freeze
+  PARAMS = %i[en_name loc_name products].freeze
   attr_r(*(PARAMS - [:products]))
-  attr_reader :id
+  attr_reader :id, :updated_at
 
   def initialize(id, account, params = {})
     super(account)
@@ -24,13 +24,23 @@ class MetaProduct < Entity
   end
 
   def products
+    read unless @params[:products]
     @params[:products].dup
+  end
+
+  def read
+    LOGGER.debug("Reading Metaproduct #{en_name}(#{id})")
+    response = @account.get("metaproducts/#{id}")
+    hash = JSON.parse(response.response_body)
+    hash['metaproduct']&.store('product', hash['product'])
+    MetaProduct.from_hash(@account, hash['metaproduct'])
   end
 
   private
 
   def merge_params(params)
     @params.merge!(params.slice(*PARAMS))
+    @updated_at = Time.now
     self
   end
 

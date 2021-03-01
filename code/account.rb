@@ -21,6 +21,10 @@ class Account
     request(path, :get, body: body, format: format, params: params)
   end
 
+  def put(path, body: nil, format: :json, params: {})
+    request(path, :put, body: body, format: format, params: params)
+  end
+
   def post(path, body: nil, format: :json, params: {})
     request(path, :post, body: body, format: format, params: params)
   end
@@ -36,7 +40,8 @@ class Account
     req.options[:headers].merge!(
       { 'Authorization' => oauth_helper.header + ", realm=#{make_uri(path, format: format).inspect}" }
     )
-    LOGGER.debug("#{method.to_s.capitalize}: #{uri.inspect}")
+    LOGGER.info("#{method.to_s.capitalize}: #{uri.inspect}")
+    LOGGER.debug { body.to_yaml }
     run_req(req)
   end
 
@@ -48,7 +53,10 @@ class Account
   end
 
   def make_body(body)
-    body = XmlSimple.xml_out(body, RootName: 'request', XmlDeclaration: true) if body.respond_to? :each
+    if body.respond_to? :each
+      body = XmlSimple.xml_out(body, RootName: 'request', XmlDeclaration: '<?xml version="1.0" encoding="UTF-8" ?>',
+                                     SuppressEmpty: nil, NoAttr: true)
+    end
     body
   end
 
@@ -58,7 +66,8 @@ class Account
     response = req.run
     @request_count = get_from_header(response, /X-Request-Limit-Count: \d+/).to_i
     @request_limit = get_from_header(response, /X-Request-Limit-Max: \d+/).to_i
-    LOGGER.debug("#{response.response_code} (#{response.return_code}) (Limit: #{request_count}/#{request_limit})")
+    LOGGER.info("#{response.response_code} (#{response.return_code}) (Limit: #{request_count}/#{request_limit})")
+    LOGGER.debug { JSON.parse(response.response_body).to_yaml }
     response
   end
 
