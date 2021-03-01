@@ -8,6 +8,7 @@ require_relative 'product'
 # See https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Metaproduct
 class MetaProduct < Entity
   PARAMS = %i[en_name loc_name products].freeze
+  PATH_BASE = 'metaproducts'
   attr_r(*(PARAMS - [:products]))
   attr_reader :id, :updated_at
 
@@ -30,7 +31,7 @@ class MetaProduct < Entity
 
   def read
     LOGGER.debug("Reading Metaproduct #{en_name}(#{id})")
-    response = @account.get("metaproducts/#{id}")
+    response = @account.get("#{PATH_BASE}/#{id}")
     hash = JSON.parse(response.response_body)
     hash['metaproduct']&.store('product', hash['product'])
     MetaProduct.from_hash(@account, hash['metaproduct'])
@@ -39,6 +40,8 @@ class MetaProduct < Entity
   private
 
   def merge_params(params)
+    @params[:products] ||= []
+    params[:products] = @params[:products].union(params[:products] || [])
     @params.merge!(params.slice(*PARAMS))
     @updated_at = Time.now
     self
@@ -61,6 +64,27 @@ class MetaProduct < Entity
 
     def create(id, account, params = {})
       self[id]&.send(:merge_params, params) || new(id, account, params)
+    end
+
+    def search(account, search_string, exact: false)
+      start = 0
+      products = []
+      loop do
+        single_search(account, search_string, products, start, exact: exact)
+        break unless products.count == start += 100
+      end
+      products
+    end
+
+    private
+
+    def single_search(account, search_string, array, start, exact: false)
+      response = account.get("#{PATH_BASE}/find", params: { search: search_string, exact: exact, start: start,
+                                                            maxResults: 100, idGame: 1, idLanguage: 1 })
+      JSON.parse(response.response_body)['metaproduct']&.each do |product|
+        array << from_hash(account, product)
+      end
+      array
     end
   end
 end

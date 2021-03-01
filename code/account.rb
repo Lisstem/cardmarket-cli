@@ -48,7 +48,8 @@ class Account
   def make_uri(path, format: :json, params: {})
     raise "Unknown format #{format}" unless %i[json xml].include?(format)
 
-    params = params.empty? ? '' : "?#{params.to_a.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')}"
+    params = "#{'?' unless params.empty?}#{params.to_a.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }
+                                            .join('&')}"
     "#{@oauth_consumer.site}/ws/v2.0/output.#{format}/#{path}#{params}"
   end
 
@@ -66,12 +67,14 @@ class Account
     response = req.run
     @request_count = get_from_header(response, /X-Request-Limit-Count: \d+/).to_i
     @request_limit = get_from_header(response, /X-Request-Limit-Max: \d+/).to_i
-    LOGGER.info("#{response.response_code} (#{response.return_code}) (Limit: #{request_count}/#{request_limit})")
+    LOGGER.info("#{response.response_code} (#{response.return_code}) (Limit: "\
+                "#{request_count || '?'}/#{request_limit || '?'})")
     LOGGER.debug { JSON.parse(response.response_body).to_yaml }
     response
   end
 
   def get_from_header(response, regex)
-    response.response_headers.match(regex)[0].split(':')[1]
+    match = response.response_headers.match(regex)
+    match.size.positive? ? match[0].split(':')&.fetch(1) : nil
   end
 end
