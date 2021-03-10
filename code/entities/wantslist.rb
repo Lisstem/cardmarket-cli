@@ -36,7 +36,7 @@ class Wantslist < Entity
     response = @account.get(path)
     hash = JSON.parse(response.response_body)['wantslist']
 
-    @name = hash['name']
+    @params[:name] = hash['name']
     clear
     @changed = false
     hash['item']&.each { |item| add_item(WantslistItem.from_hash(@account, item)) }

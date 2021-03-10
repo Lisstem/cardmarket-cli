@@ -12,8 +12,9 @@ require_relative 'util/logger'
 class Account
   attr_reader :request_limit, :request_count
 
-  def initialize(app_token, app_secret, access_token, access_token_secret)
-    @oauth_consumer = OAuth::Consumer.new(app_token, app_secret, site: 'https://api.cardmarket.com')
+  def initialize(app_token, app_secret, access_token, access_token_secret, test: false)
+    site = test ? 'https://sandbox.cardmarket.com' : 'https://api.cardmarket.com'
+    @oauth_consumer = OAuth::Consumer.new(app_token, app_secret, site: site)
     @access_token = OAuth::AccessToken.new(@oauth_consumer, access_token, access_token_secret)
   end
 
@@ -75,6 +76,6 @@ class Account
 
   def get_from_header(response, regex)
     match = response.response_headers.match(regex)
-    match.size.positive? ? match[0].split(':')&.fetch(1) : nil
+    match&.size&.positive? ? match[0].split(':')&.fetch(1) : nil
   end
 end
