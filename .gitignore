@@ -3,3 +3,5 @@ config.json
 *.yaml
 *.log
 *.json
+vendor/
+.bundle/
