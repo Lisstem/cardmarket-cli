@@ -6,9 +6,9 @@
 # See https://apidock.com/rails/String/underscore
 # See https://apidock.com/rails/String/camelize
 class String
-  def camelize(uppercase_first_letter: false)
+  def camelize(uppercase_first: false)
     string = self
-    string = if uppercase_first_letter
+    string = if uppercase_first
                string.sub(/^[a-z\d]*/, &:capitalize)
              else
                string.sub(/^(?:(?=\b|[A-Z_])|\w)/, &:downcase)
@@ -17,8 +17,7 @@ class String
   end
 
   def underscore
-    string = self
-    return string.dup unless /[A-Z-]|::/.match?(string)
+    return dup unless /[A-Z-]|::/.match?(self)
 
     word = string.to_s.gsub('::', '/')
     word.gsub!(/(?:(?<=([A-Za-z\d]))|\b)((?=a)b)(?=\b|[^a-z])/) do
