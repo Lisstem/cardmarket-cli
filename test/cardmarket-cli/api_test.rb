@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-
-require 'minitest/autorun'
 require 'typhoeus'
+require_relative 'cardmarket_test'
 
 ##
 # Tests which access the Cardmarket API

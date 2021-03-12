@@ -15,6 +15,7 @@ gem 'xml-simple', '~> 1.1'
 
 group :test do
   gem 'minitest'
+  gem 'minitest-reporters'
 end
 
 group :development do
