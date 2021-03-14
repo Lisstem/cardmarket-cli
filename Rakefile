@@ -11,6 +11,8 @@ end
 
 require 'rubocop/rake_task'
 
-RuboCop::RakeTask.new
+RuboCop::RakeTask.new do |t|
+  t.options = ['--auto-correct']
+end
 
 task default: %i[test rubocop]
