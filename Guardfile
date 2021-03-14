@@ -16,13 +16,18 @@
 #  $ ln -s config/Guardfile .
 #
 # and, you'll have to watch "config/Guardfile" instead of "Guardfile"
+API_TESTS = %w[meta_product product wantslist wantslist_item].freeze
+
 
 guard :minitest do
   # with Minitest::Unit
   watch(%r{^test/(.*)/?(.*)_test\.rb$})
-  watch(%r{^lib/(.*/)?([^/]+)\.rb$})     { |m| "test/#{m[1]}test_#{m[2]}.rb" }
+  watch(%r{^lib/cardmarket_cli/(.*/)?([^/]+)\.rb$}) { |m| "test/unit/#{m[1]}#{m[2]}_test.rb" }
   watch(%r{^test/test_helper\.rb$})      { 'test' }
   watch(%r{^test/cardmarket_test.rb$})   { 'test' }
+  watch(%r{^test/api_test.rb$}) do
+    API_TESTS.map { |m| "test/unit/entities/#{m}_test.rb" } << 'test/account_test.rb'
+  end
 
   # with Minitest::Spec
   # watch(%r{^spec/(.*)_spec\.rb$})
