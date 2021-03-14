@@ -24,5 +24,9 @@ module CardmarketCLI
         end
       end
     end
+
+    def assert_not(test, msg = nil)
+      assert !test, msg
+    end
   end
 end

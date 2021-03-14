@@ -4,10 +4,15 @@ require_relative '../../test_helper'
 
 module CardmarketCLI
   module Entities
+    ##
+    # Wrapper to create attribute readers.
+    class EntityWrapper < Entity
+      attr_r :foo, :bar
+    end
+
     class EntityTest < CardmarketTest
       def setup
-        @entity = Entity.new(:id, :account, foo: :foo, bar: :bar)
-        @entity.class.class_eval('attr_r :foo, :bar', __FILE__, __LINE__)
+        @entity = EntityWrapper.new(:id, :account, foo: :foo, bar: :bar)
       end
 
       test 'has attr_r' do
@@ -26,17 +31,17 @@ module CardmarketCLI
       end
 
       test 'does not have id writer' do
-        assert !@entity.respond_to?(:id=)
+        assert_not @entity.respond_to?(:id=)
       end
 
       test 'does not have account getter and writer' do
-        assert !@entity.respond_to?(:account)
-        assert !@entity.respond_to?(:account=)
+        assert_not @entity.respond_to?(:account)
+        assert_not @entity.respond_to?(:account=)
       end
 
       test 'does not have params getter and writer' do
-        assert !@entity.respond_to?(:params)
-        assert !@entity.respond_to?(:params=)
+        assert_not @entity.respond_to?(:params)
+        assert_not @entity.respond_to?(:params=)
       end
     end
   end

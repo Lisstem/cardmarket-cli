@@ -18,7 +18,6 @@
 # and, you'll have to watch "config/Guardfile" instead of "Guardfile"
 API_TESTS = %w[meta_product product wantslist wantslist_item].freeze
 
-
 guard :minitest do
   # with Minitest::Unit
   watch(%r{^test/(.*)/?(.*)_test\.rb$})
