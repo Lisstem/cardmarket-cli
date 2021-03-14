@@ -27,6 +27,8 @@ module CardmarketCLI
           attr_r(*symbols)
           symbols.each do |symbol|
             define_method "#{symbol}=" do |val|
+              return if @params[symbol] == val
+
               @params[symbol] = val
               @changed = true
             end
