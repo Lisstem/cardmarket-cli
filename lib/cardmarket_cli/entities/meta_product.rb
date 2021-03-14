@@ -13,12 +13,10 @@ module CardmarketCLI
       PARAMS = %i[en_name loc_name products].freeze
       PATH_BASE = 'metaproducts'
       attr_r(*(PARAMS - [:products]))
-      attr_reader :id, :updated_at
+      attr_reader :updated_at
 
       def initialize(id, account, params = {})
-        super(account)
-        @id = id
-        @params = {}
+        super(id, account, { products: [] })
         merge_params(params)
         MetaProduct.send(:add, self)
       end
@@ -28,24 +26,23 @@ module CardmarketCLI
       end
 
       def products
-        read unless @params[:products]
-        @params[:products].dup
+        read unless params[:products]
+        params[:products].dup
       end
 
       def read
         LOGGER.debug("Reading Metaproduct #{en_name}(#{id})")
-        response = @account.get("#{PATH_BASE}/#{id}")
+        response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)
         hash['metaproduct']&.store('product', hash['product'])
-        MetaProduct.from_hash(@account, hash['metaproduct'])
+        MetaProduct.from_hash(account, hash['metaproduct'])
       end
 
       private
 
       def merge_params(params)
-        @params[:products] ||= []
-        params[:products] = @params[:products].union(params[:products] || [])
-        @params.merge!(params.slice(*PARAMS))
+        params[:products] = params[:products].union(params[:products] || [])
+        params.merge!(params.slice(*PARAMS))
         @updated_at = Time.now
         self
       end

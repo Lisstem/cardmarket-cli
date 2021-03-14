@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cardmarket_cli/entities/deletable'
-require 'cardmarket_cli/entities/entity'
+require 'cardmarket_cli/entities/changeable'
 require 'cardmarket_cli/entities/wantslist_item'
 require 'cardmarket_cli/entities/unique'
 require 'cardmarket_cli/logger'
@@ -10,20 +10,16 @@ module CardmarketCLI
   module Entities
     ##
     # see https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Wantslist
-    class Wantslist < Entity
+    class Wantslist < Changeable
       extend Deletable
 
       PARAMS = %i[name].freeze
       PATH_BASE = 'wantslist'
       attr_(*PARAMS)
       list_attr :item
-      attr_reader :id
 
-      def initialize(id, name, account, params = {})
-        super(account)
-        @id = id
-        @params = params.slice(*PARAMS)
-        @params[:name] = name
+      def initialize(id, account, params = {})
+        super(id, account, params.slice(*PARAMS))
         Wantslist.send(:add, self)
       end
 
@@ -35,7 +31,7 @@ module CardmarketCLI
         LOGGER.debug("Reading wantslist #{name}(#{id})")
         return unless id
 
-        response = @account.get(path)
+        response = account.get(path)
         override_params(JSON.parse(response.response_body)['wantslist'])
 
         response
@@ -45,7 +41,7 @@ module CardmarketCLI
         LOGGER.debug("Deleting wantslist #{name}(#{id})")
         return unless id
 
-        @account.delete(path, body: { action: 'deleteWantslist' })
+        account.delete(path, body: { action: 'deleteWantslist' })
       end
 
       def update
@@ -60,10 +56,10 @@ module CardmarketCLI
       private
 
       def override_params(hash)
-        @params[:name] = hash['name']
+        params[:name] = hash['name']
         clear
-        @changed = false
-        hash['item']&.each { |item| add_item(WantslistItem.from_hash(@account, item)) }
+        self.changed = false
+        hash['item']&.each { |item| add_item(WantslistItem.from_hash(account, item)) }
       end
 
       def patch_items(responses)
@@ -72,35 +68,35 @@ module CardmarketCLI
       end
 
       def create
-        response = @account.post(PATH_BASE, body: { wantslist: { name: name, idGame: 1 } })
-        @id = JSON.parse(response)['wantslist']&.fetch(0)&.fetch('idWantsList')
+        response = account.post(PATH_BASE, body: { wantslist: { name: name, idGame: 1 } })
+        self.id = JSON.parse(response)['wantslist']&.fetch(0)&.fetch('idWantsList')
         response
       end
 
       def patch
-        @account.put(path, body: { action: 'editWantslist', name: name })
+        account.put(path, body: { action: 'editWantslist', name: name })
       end
 
       def create_items
         new_items = @items.reject(&:id)
         return nil if new_items.empty?
 
-        @account.put(path, body: { action: 'addItem',
-                                   product: new_items.reject(&:meta?).map!(&:to_xml_hash),
-                                   metaproduct: new_items.select(&:meta?).map!(&:to_xml_hash) })
+        account.put(path, body: { action: 'addItem',
+                                  product: new_items.reject(&:meta?).map!(&:to_xml_hash),
+                                  metaproduct: new_items.select(&:meta?).map!(&:to_xml_hash) })
       end
 
       def update_items
         changed_items = @items.select(&:changed?)
         return nil if changed_items.empty?
 
-        @account.put(path, body: { action: 'editItem', want: changed_items.map!(&:to_xml_hash) })
+        account.put(path, body: { action: 'editItem', want: changed_items.map!(&:to_xml_hash) })
       end
 
       def delete_items
         return nil if deleted_items.empty?
 
-        @account.put(path, body: { action: 'deleteItem', want: @deleted_items.map { |item| { idWant: item.id } } })
+        account.put(path, body: { action: 'deleteItem', want: @deleted_items.map { |item| { idWant: item.id } } })
       end
 
       class << self
@@ -132,7 +128,7 @@ module CardmarketCLI
         def from_hash(account, hash)
           return nil unless hash['game']&.fetch('idGame') == 1
 
-          list = Wantslist.new(hash['idWantsList'], hash['name'], account)
+          list = Wantslist.new(hash['idWantsList'], account, name: hash['name'])
           hash['item']&.each { |item| list.add_item(WantslistItem.from_hash(account, item)) }
           list
         end

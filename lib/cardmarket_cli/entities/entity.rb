@@ -3,17 +3,20 @@
 module CardmarketCLI
   module Entities
     ##
-    # Base for all entites in the API
+    # Base for all entities in the API
     class Entity
-      def initialize(account)
-        @changed = false
-        @params = {}
+      attr_reader :id
+
+      def initialize(id, account, params = {})
+        @id = id
+        @params = params
         @account = account
       end
 
-      def changed?
-        @changed
-      end
+      protected
+
+      attr_writer :id
+      attr_accessor :account, :params
 
       class << self
         protected
@@ -22,16 +25,6 @@ module CardmarketCLI
           symbols.each do |symbol|
             define_method symbol do
               @params[symbol]
-            end
-          end
-        end
-
-        def attr_(*symbols)
-          attr_r(*symbols)
-          symbols.each do |symbol|
-            define_method "#{symbol}=" do |val|
-              @params[symbol] = val
-              @changed = true
             end
           end
         end

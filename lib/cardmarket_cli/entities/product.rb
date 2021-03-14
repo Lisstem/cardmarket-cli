@@ -12,12 +12,9 @@ module CardmarketCLI
       PARAMS = %i[en_name loc_name meta_product expansion_name rarity count_articles count_foils price_guide].freeze
       PATH_BASE = 'products'
       attr_r(*(PARAMS - [:price_guide]))
-      attr_reader :id
 
       def initialize(id, account, params = {})
-        super(account)
-        @id = id
-        @params = {}
+        super(id, account, {})
         merge_params(params)
         Product.send(:add, self)
       end
@@ -28,22 +25,22 @@ module CardmarketCLI
 
       def read
         LOGGER.debug("Reading Product #{en_name}(#{id})")
-        response = @account.get("#{PATH_BASE}/#{id}")
+        response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)['product']
         hash['expansion_name'] ||= hash['expansion']&.fetch('enName')
-        Product.from_hash(@account, hash)
+        Product.from_hash(account, hash)
       end
 
       def price_guide
-        @params[:price_guide].dup
+        params[:price_guide].dup
       end
 
       private
 
       def merge_params(params)
         params[:price_guide]&.transform_keys! { |key| key.to_s.underscore.to_sym }&.delete(nil)
-        @params.merge!(params.slice(*PARAMS))
-        @params[:rarity] = @params[:rarity]&.to_s&.downcase!&.to_sym
+        params.merge!(params.slice(*PARAMS))
+        params[:rarity] = params[:rarity]&.to_s&.downcase!&.to_sym
         @updated_at = Time.now
         self
       end
