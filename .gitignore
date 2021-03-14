@@ -1,8 +1,10 @@
 .idea/
 config.json
 *.yaml
+!test/typhoeus_responses/*.yaml
 *.log
 *.json
+*.gem
 /.vendor/
 /.bundle/
 /.yardoc
