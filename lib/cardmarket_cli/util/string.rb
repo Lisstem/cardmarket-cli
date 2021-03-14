@@ -19,7 +19,7 @@ class String
   def underscore
     return dup unless /[A-Z-]|::/.match?(self)
 
-    word = string.to_s.gsub('::', '/')
+    word = gsub('::', '/').dup
     word.gsub!(/(?:(?<=([A-Za-z\d]))|\b)((?=a)b)(?=\b|[^a-z])/) do
       "#{Regexp.last_match(1) && '_'}#{Regexp.last_match(2).downcase}"
     end

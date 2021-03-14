@@ -6,6 +6,7 @@ require 'oauth/request_proxy/typhoeus_request'
 require 'xmlsimple'
 require 'cgi'
 require 'cardmarket_cli/logger'
+require 'json'
 
 module CardmarketCLI
   ##
@@ -13,9 +14,9 @@ module CardmarketCLI
   class Account
     attr_reader :request_limit, :request_count
 
-    def initialize(app_token, app_secret, access_token, access_token_secret, test: false)
-      site = test ? 'https://sandbox.cardmarket.com' : 'https://api.cardmarket.com'
-      @oauth_consumer = OAuth::Consumer.new(app_token, app_secret, site: site)
+    def initialize(app_token, app_secret, access_token, access_token_secret, options = {})
+      options[:site] ||= options[:test] ? 'https://sandbox.cardmarket.com' : 'https://api.cardmarket.com'
+      @oauth_consumer = OAuth::Consumer.new(app_token, app_secret, site: options[:site])
       @access_token = OAuth::AccessToken.new(@oauth_consumer, access_token, access_token_secret)
     end
 

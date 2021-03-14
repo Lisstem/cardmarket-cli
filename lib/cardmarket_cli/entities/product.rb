@@ -39,8 +39,8 @@ module CardmarketCLI
 
       def merge_params(params)
         params[:price_guide]&.transform_keys! { |key| key.to_s.underscore.to_sym }&.delete(nil)
-        params.merge!(params.slice(*PARAMS))
-        params[:rarity] = params[:rarity]&.to_s&.downcase!&.to_sym
+        self.params.merge!(params.slice(*PARAMS))
+        self.params[:rarity] = self.params[:rarity]&.to_s&.downcase!&.to_sym
         @updated_at = Time.now
         self
       end

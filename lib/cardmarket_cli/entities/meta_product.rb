@@ -41,8 +41,8 @@ module CardmarketCLI
       private
 
       def merge_params(params)
-        params[:products] = params[:products].union(params[:products] || [])
-        params.merge!(params.slice(*PARAMS))
+        self.params[:products] = self.params[:products].union(params[:products] || [])
+        self.params.merge!(params.slice(*PARAMS))
         @updated_at = Time.now
         self
       end
