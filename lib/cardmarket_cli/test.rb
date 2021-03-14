@@ -5,15 +5,17 @@ require 'yaml'
 require 'cardmarket_cli/account'
 require 'cardmarket_cli/logger'
 require 'cardmarket_cli/entities/wantslist'
+require 'cardmarket_cli/entities/product'
 
 config = JSON.parse(File.read('config.json'))
-config['TEST'] = true if config['TEST'].nil?
+config['TEST'] = false if config['TEST'].nil?
 CardmarketCLI::LOGGER.level = config['LOGGING_LEVEL'] || :info
 CardmarketCLI::LOGGER.level = :info
 account = CardmarketCLI::Account.new(config['APP_TOKEN'], config['APP_SECRET'], config['ACCESS_TOKEN'],
                                      config['ACCESS_TOKEN_SECRET'], test: config['TEST'])
 # puts list.to_yaml
-puts account.get('account').response_body.to_yaml
+puts account.get("#{CardmarketCLI::Entities::Product::PATH_BASE}/265535").to_yaml
+#
 # item = list.items[0]
 # item.count = 4
 # item.min_condition = :NM

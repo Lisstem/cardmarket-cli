@@ -1,0 +1,36 @@
+--- !ruby/object:Typhoeus::Response
+options:
+  :httpauth_avail: 0
+  :total_time: 1.630706
+  :starttransfer_time: 1.630506
+  :appconnect_time: 0.103149
+  :pretransfer_time: 0.103192
+  :connect_time: 0.057054
+  :namelookup_time: 0.03619
+  :redirect_time: 0.0
+  :effective_url: https://test.example.com/ws/v2.0/output.json/products/265535
+  :primary_ip: 127.0.0.1
+  :response_code: 200
+  :request_size: 528
+  :redirect_count: 0
+  :return_code: :ok
+  :response_headers: "HTTP/1.1 200 OK\r\nSet-Cookie: PHPSESSID=PHPSESSID;
+    path=/; secure; HttpOnly\r\nAccess-Control-Allow-Methods: GET, OPTIONS\r\nContent-Type:
+    application/json; charset=utf-8\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers:
+    Content-Type, Authorization, X-Requested-With\r\nAccess-Control-Expose-Headers:
+    Content-Range, Range, X-Request-Limit-Count, X-Request-Limit-Max\r\nAccess-Control-Max-Age:
+    1000\r\nX-Request-Limit-Count: 1\r\nX-Request-Limit-Max: 5000\r\nDate: Sun, 14
+    Mar 2021 20:52:48 GMT\r\nExpires: Sun, 14 Mar 2021 20:52:48 GMT\r\nX-XSS-Protection:
+    1; mode=block\r\nX-Content-Type-Options: nosniff\r\nContent-Length: 1298\r\n\r\n"
+  :response_body: '{"product":{"idProduct":265535,"idMetaproduct":9372,"countReprints":3,"enName":"Springleaf
+    Drum","locName":"Springleaf Drum","localization":[{"name":"Springleaf Drum","idLanguage":1,"languageName":"English"},{"name":"Tambour
+    de sautefeuille","idLanguage":2,"languageName":"French"},{"name":"Fr\u00fchlingsbl\u00e4ttertrommel","idLanguage":3,"languageName":"German"},{"name":"Tambor
+    de hoja primaveral","idLanguage":4,"languageName":"Spanish"},{"name":"Tamburo
+    Foglia di Primavera","idLanguage":5,"languageName":"Italian"}],"website":"\/en\/Magic\/Products\/Singles\/Born-of-the-Gods\/Springleaf-Drum","image":"\/\/static.cardmarket.com\/img\/90be405454bca7f37d6eabfb37dddb11\/items\/1\/BNG\/265535.jpg","gameName":"Magic
+    the Gathering","categoryName":"Magic Single","idGame":1,"number":"162","rarity":"Uncommon","expansion":{"idExpansion":1469,"enName":"Born
+    of the Gods","expansionIcon":246},"priceGuide":{"SELL":0.34,"LOW":0.02,"LOWEX":0.03,"LOWFOIL":1.55,"AVG":0.7,"TREND":0.28,"TRENDFOIL":3.73},"reprint":[{"idProduct":18002,"expansion":"Lorwyn","expIcon":81},{"idProduct":486849,"expansion":"Double
+    Masters","expIcon":559}],"countArticles":2444,"countFoils":217,"links":[{"rel":"self","href":"\/products\/265535","method":"GET"},{"rel":"articles","href":"\/articles\/265535","method":"GET"}]}}'
+  :debug_info: !ruby/object:Ethon::Easy::DebugInfo
+    messages: []
+
+
