@@ -5,6 +5,7 @@ require 'cardmarket_cli'
 
 require 'minitest/autorun'
 require 'minitest/reporters'
+require 'mocha/minitest'
 
 require 'cardmarket_test'
 require 'api_test'
