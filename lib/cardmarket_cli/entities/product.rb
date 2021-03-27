@@ -28,9 +28,8 @@ module CardmarketCLI
         LOGGER.debug("Reading Product #{en_name}(#{id})")
         response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)['product']
-        puts hash.to_yaml
-        hash['expansion_name'] ||= hash['expansion']&.fetch('enName')
-        Product.from_hash(account, hash)
+        hash['expansion_name'] ||= hash['expansion']&.[]('enName')
+        Product.from_json_hash(account, hash)
       end
 
       def price_guide
@@ -53,7 +52,7 @@ module CardmarketCLI
 
         private :new
 
-        def from_hash(account, hash)
+        def from_json_hash(account, hash)
           hash.transform_keys! { |key| key.underscore.to_sym }
           hash[:meta_product] = MetaProduct.create(hash.delete(:id_metaproduct), account)
           product = Product.create(hash[:id_product], account, hash)
@@ -69,19 +68,20 @@ module CardmarketCLI
           start = 0
           products = []
           loop do
-            search(account, search_string, products, start, exact: exact)
-            break unless products.count == start += 100
+            products.insert(-1, *search(account, search_string, start: start, exact: exact))
+            break unless products.count >= start += 100
           end
           products
         end
 
-        def search(account, search_string, array, start, exact: false)
+        def search(account, search_string, start: 0, exact: false)
           response = account.get("#{PATH_BASE}/find", params: { search_all: search_string, exact: exact, start: start,
                                                                 maxResults: 100, idGame: 1, idLanguage: 1 })
+          results = []
           JSON.parse(response.response_body)['product']&.each do |product|
-            array << from_hash(account, product)
+            results << from_json_hash(account, product)
           end
-          array
+          results
         end
       end
     end

@@ -35,7 +35,7 @@ module CardmarketCLI
         response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)
         hash['metaproduct']&.store('product', hash['product'])
-        MetaProduct.from_hash(account, hash['metaproduct'])
+        MetaProduct.from_json_hash(account, hash['metaproduct'])
       end
 
       private
@@ -53,11 +53,11 @@ module CardmarketCLI
 
         private :new
 
-        def from_hash(account, hash)
+        def from_json_hash(account, hash)
           hash.transform_keys! { |key| key.underscore.to_sym }
           hash[:products] = []
           hash.delete(:product)&.each do |product|
-            hash[:products] << Product.from_hash(account, product)
+            hash[:products] << Product.from_json_hash(account, product)
           end
           MetaProduct.create(hash[:id_metaproduct], account, hash)
         end
@@ -70,19 +70,20 @@ module CardmarketCLI
           start = 0
           products = []
           loop do
-            search(account, search_string, products, start, exact: exact)
-            break unless products.count == start += 100
+            products.insert(-1, *search(account, search_string, start, exact: exact))
+            break unless products.count >= start += 100
           end
           products
         end
 
-        def search(account, search_string, array, start, exact: false)
+        def search(account, search_string, start, exact: false)
           response = account.get("#{PATH_BASE}/find", params: { search_all: search_string, exact: exact, start: start,
                                                                 maxResults: 100, idGame: 1, idLanguage: 1 })
+          results = []
           JSON.parse(response.response_body)['metaproduct']&.each do |product|
-            array << from_hash(account, product)
+            results << from_json_hash(account, product)
           end
-          array
+          results
         end
       end
     end
