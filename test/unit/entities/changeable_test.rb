@@ -16,17 +16,17 @@ module CardmarketCLI
       end
 
       test 'should have attr_r' do
-        assert @changeable.respond_to? :foo
-        assert @changeable.respond_to? :bar
+        assert_respond_to @changeable, :foo
+        assert_respond_to @changeable, :bar
       end
 
       test 'should have attr_w' do
-        assert @changeable.respond_to? :foo=
-        assert @changeable.respond_to? :bar=
+        assert_respond_to @changeable, :foo=
+        assert_respond_to @changeable, :bar=
       end
 
       test 'should respond to changed?' do
-        assert @changeable.respond_to? :changed?
+        assert_respond_to @changeable, :changed?
       end
 
       test 'should not change after new' do
