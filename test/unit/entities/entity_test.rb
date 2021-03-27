@@ -31,17 +31,17 @@ module CardmarketCLI
       end
 
       test 'should not have id writer' do
-        assert_not_respond_to @entity, :id=
+        refute_respond_to @entity, :id=
       end
 
       test 'should not have account getter and writer' do
-        assert_not_respond_to @entity, :account
-        assert_not_respond_to @entity, :account=
+        refute_respond_to @entity, :account
+        refute_respond_to @entity, :account=
       end
 
       test 'should not have params getter and writer' do
-        assert_not_respond_to @entity, :params
-        assert_not_respond_to @entity, :params=
+        refute_respond_to @entity, :params
+        refute_respond_to @entity, :params=
       end
     end
   end

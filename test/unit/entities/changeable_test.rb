@@ -30,7 +30,7 @@ module CardmarketCLI
       end
 
       test 'should not change after new' do
-        assert_not @changeable.changed?
+        refute @changeable.changed?
       end
 
       test 'should change after attribute update' do
@@ -40,7 +40,7 @@ module CardmarketCLI
 
       test 'should not change if attribute updated with same value' do
         @changeable.bar = @changeable.bar
-        assert_not @changeable.changed?
+        refute @changeable.changed?
       end
     end
   end

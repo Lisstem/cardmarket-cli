@@ -35,18 +35,18 @@ module CardmarketCLI
       end
 
       test 'should not respond to add' do
-        assert_not_respond_to @hash, :add
-        assert_not_respond_to @array, :add
+        refute_respond_to @hash, :add
+        refute_respond_to @array, :add
       end
 
       test 'should not respond to remove' do
-        assert_not_respond_to @hash, :remove
-        assert_not_respond_to @array, :remove
+        refute_respond_to @hash, :remove
+        refute_respond_to @array, :remove
       end
 
       test 'should not respond to remove_at' do
-        assert_not_respond_to @hash, :remove_at
-        assert_not_respond_to @array, :remove_at
+        refute_respond_to @hash, :remove_at
+        refute_respond_to @array, :remove_at
       end
 
       test 'should be able to add' do
@@ -80,8 +80,8 @@ module CardmarketCLI
         hashes = @hash.hashes
         hashes['b'] = :b
         arrays = @array.arrays << :b
-        assert_not_equal hashes, @hash.hashes
-        assert_not_equal arrays, @array.arrays
+        refute_equal hashes, @hash.hashes
+        refute_equal arrays, @array.arrays
       end
 
       test 'remove should remove if present' do
