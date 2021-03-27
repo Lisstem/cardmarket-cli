@@ -47,7 +47,7 @@ module CardmarketCLI
       test 'should have reader for all attributes' do
         (Product::PARAMS - [:price_guide]).each do |param|
           assert_respond_to @product.value, param
-          assert_equal param, @product.value.send(param)
+          assert_equal param, @product.value.public_method(param).call
         end
         assert_respond_to @product.value, :price_guide
         assert_equal({}, @product.value.price_guide)
@@ -140,13 +140,9 @@ module CardmarketCLI
         response_mock = mock
         response_mock.expects(:response_body).once.returns({ product: nil }.to_json)
         find = 'goyf'
-        account.expects(:get).with("#{Product::PATH_BASE}/find",
-                                   params: { search_all: 'goyf',
-                                             exact: false,
-                                             start: 0,
-                                             maxResults: 100,
-                                             idGame: 1,
-                                             idLanguage: 1 }).once.returns(response_mock)
+        account.expects(:get).with("#{Product::PATH_BASE}/find", params: { search_all: 'goyf', exact: false, start: 0,
+                                                                           maxResults: 100, idGame: 1, idLanguage: 1 })
+               .once.returns(response_mock)
 
         assert Product.search(account, find)
       end

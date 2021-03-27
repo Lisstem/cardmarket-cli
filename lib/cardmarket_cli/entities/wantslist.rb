@@ -16,7 +16,7 @@ module CardmarketCLI
       PARAMS = %i[name].freeze
       PATH_BASE = 'wantslist'
       attr_(*PARAMS)
-      list_attr :item
+      list_attr :item, default: true
 
       def initialize(id, account, params = {})
         super(id, account, params.slice(*PARAMS))
@@ -57,7 +57,7 @@ module CardmarketCLI
 
       def override_params(hash)
         params[:name] = hash['name']
-        clear
+        clear_items
         self.changed = false
         hash['item']&.each { |item| add_item(WantslistItem.from_hash(account, item)) }
       end
@@ -102,7 +102,7 @@ module CardmarketCLI
       class << self
         extend Deletable
         extend Unique
-        list_attr :instance, default: false, suffix: false
+        list_attr :instance, default: true, suffix: false
         uniq_attr :instance, hash: false
 
         def read(account, eager: true)

@@ -6,12 +6,12 @@ module CardmarketCLI
     # marks that an entity can be deleted
     module Deletable
       def list_attr(symbol, options = {})
-        options = { plural: "#{symbol}s", default: true, suffix: true, add: 'add', delete: 'delete', hash: false }
+        options = { plural: "#{symbol}s", default: false, suffix: true, add: 'add', delete: 'delete', hash: false }
                   .merge!(options)
         def_modifiers(symbol, options[:plural], options)
-        def_reader(options[:plural], options[:hash])
+        def_readers(options[:plural], options[:hash])
         def_brackets(options[:plural], options[:hash]) if options[:default]
-        def_clear(options[:plural], options[:hash])
+        def_clear(options[:plural], options[:hash], options[:suffix])
         symbol
       end
 
@@ -31,6 +31,8 @@ module CardmarketCLI
       def def_add_hash(symbol, plural, name, suffix)
         define_method "#{name}#{"_#{symbol}" if suffix}" do |params|
           key, value, = params
+          return unless key
+
           instance_variable_set("@#{plural}", {}) unless instance_variable_defined? "@#{plural}"
           instance_variable_set("@deleted_#{plural}", {}) unless instance_variable_defined? "@deleted_#{plural}"
           instance_variable_get("@#{plural}")[key] = value if key
@@ -69,15 +71,15 @@ module CardmarketCLI
         end
       end
 
-      def def_reader(plural, hash)
+      def def_readers(plural, hash)
         return if respond_to? plural.to_s.to_sym
 
-        def_reader_normal(plural, hash)
+        def_reader(plural, hash)
         def_reader_deleted(plural, hash)
       end
 
-      def def_reader_normal(plural, hash)
-        define_method plural.to_s do
+      def def_reader(plural, hash)
+        define_method plural do
           instance_variable_set("@#{plural}", hash ? {} : []) unless instance_variable_defined? "@#{plural}"
           instance_variable_get("@#{plural}").dup
         end
@@ -101,12 +103,12 @@ module CardmarketCLI
         end
       end
 
-      def def_clear(plural, hash)
-        define_method :clear do
+      def def_clear(plural, hash, suffix)
+        define_method "clear#{"_#{plural}" if suffix}" do
           instance_variable_set("@#{plural}", hash ? {} : [])
           instance_variable_set("@deleted_#{plural}", hash ? {} : [])
         end
-        private :clear
+        private "clear#{"_#{plural}" if suffix}".to_sym
       end
     end
   end
