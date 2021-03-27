@@ -9,6 +9,8 @@ module CardmarketCLI
         options = { hash: true, plural: "#{symbol}s", index: :id }.merge! options
         def_brackets(options[:plural], options[:hash])
         def_add(options[:plural], options[:hash], options[:index])
+        def_remove(options[:plural])
+        def_remove_at(options[:plural]) unless options[:hash]
         def_reader(options[:plural], options[:hash])
       end
 
@@ -42,6 +44,23 @@ module CardmarketCLI
           end
         end
         private :add
+      end
+
+      def def_remove(plural)
+        define_method :remove do |object|
+          return unless instance_variable_defined? "@#{plural}"
+
+          instance_variable_get("@#{plural}").delete(object)
+        end
+        private :remove
+      end
+
+      def def_remove_at(plural)
+        define_method :remove_at do |index|
+          return unless instance_variable_defined? "@#{plural}"
+
+          instance_variable_get("@#{plural}").delete_at(index)
+        end
       end
     end
   end
