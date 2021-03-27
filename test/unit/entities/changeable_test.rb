@@ -15,30 +15,30 @@ module CardmarketCLI
         @changeable = ChangeableWrapper.new(:id, :account, foo: :foo, bar: :bar)
       end
 
-      test 'has attr_r' do
+      test 'should have attr_r' do
         assert @changeable.respond_to? :foo
         assert @changeable.respond_to? :bar
       end
 
-      test 'has attr_w' do
+      test 'should have attr_w' do
         assert @changeable.respond_to? :foo=
         assert @changeable.respond_to? :bar=
       end
 
-      test 'has changed?' do
+      test 'should respond to changed?' do
         assert @changeable.respond_to? :changed?
       end
 
-      test 'has not changed after new' do
+      test 'should not change after new' do
         assert_not @changeable.changed?
       end
 
-      test 'has changed after attribute update' do
+      test 'should change after attribute update' do
         @changeable.foo = :bar
         assert @changeable.changed?
       end
 
-      test 'does not change if attribute updated with same value' do
+      test 'should not change if attribute updated with same value' do
         @changeable.bar = @changeable.bar
         assert_not @changeable.changed?
       end
