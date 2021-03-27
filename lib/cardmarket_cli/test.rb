@@ -14,7 +14,7 @@ CardmarketCLI::LOGGER.level = :info
 account = CardmarketCLI::Account.new(config['APP_TOKEN'], config['APP_SECRET'], config['ACCESS_TOKEN'],
                                      config['ACCESS_TOKEN_SECRET'], test: config['TEST'])
 # puts list.to_yaml
-puts account.get("#{CardmarketCLI::Entities::Product::PATH_BASE}/265535").to_yaml
+puts CardmarketCLI::Entities::Product.search(account, 'goyf').to_yaml
 #
 # item = list.items[0]
 # item.count = 4

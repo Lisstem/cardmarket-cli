@@ -24,13 +24,11 @@ module CardmarketCLI
 
         Dir.glob("#{__dir__}/typhoeus_responses/*.yaml").each do |response|
           name = File.basename(response).split('.')[0].to_sym
-          @responses[name] = proc { YAML.load_file(response) }
+          @responses[name] = YAML.load_file(response)
         end
       end
 
       def responses(name)
-        name = name.to_sym if name.respond_to? :to_sym
-        @responses[name] = @responses[name].call if @responses[name].respond_to? :call
         @responses[name]
       end
     end

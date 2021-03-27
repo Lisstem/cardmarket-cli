@@ -67,10 +67,10 @@ module CardmarketCLI
 
         def create_product(account, hash)
           if hash['type'] == 'metaproduct'
-            MetaProduct.from_hash(account, hash['metaproduct'])
+            MetaProduct.from_json_hash(account, hash['metaproduct'])
           else
-            Product.from_hash(account, hash.slice(*%w[rarity expansionName countArticles countFoils])
-                                           .merge!(hash['product']))
+            Product.from_json_hash(account, hash.slice(*%w[rarity expansionName countArticles countFoils])
+                                                .merge!(hash['product']))
           end
         end
       end
