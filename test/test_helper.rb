@@ -9,6 +9,7 @@ require 'mocha/minitest'
 
 require 'cardmarket_test'
 require 'api_test'
+require 'assertions'
 
 ##
 # redefine LOGGER because it would mess up the output

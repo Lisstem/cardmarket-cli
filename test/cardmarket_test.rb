@@ -24,14 +24,5 @@ module CardmarketCLI
         end
       end
     end
-
-    def assert_not(test, msg = nil)
-      assert !test, msg
-    end
-
-    def assert_not_equal(not_exp, act, msg = nil)
-      msg ||= "Actual was unexpected: #{not_exp.inspect}"
-      assert_not not_exp.equal?(act), msg
-    end
   end
 end

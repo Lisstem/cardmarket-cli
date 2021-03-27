@@ -24,6 +24,7 @@ guard :minitest do
   watch(%r{^lib/cardmarket_cli/(.*/)?([^/]+)\.rb$}) do |m|
     %W[test/unit/#{m[1]}#{m[2]}_test.rb test/unit/#{m[1]}#{m[2]}_class_test.rb]
   end
+  watch(%r{^test/assertions.rb$})        { 'test' }
   watch(%r{^test/test_helper\.rb$})      { 'test' }
   watch(%r{^test/cardmarket_test.rb$})   { 'test' }
   watch(%r{^test/api_test.rb$}) do
