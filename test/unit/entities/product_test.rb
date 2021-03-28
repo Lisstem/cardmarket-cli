@@ -70,7 +70,7 @@ module CardmarketCLI
       test 'price guide should dub' do
         dub = @product.value.price_guide
         dub[:a] = :a
-        refute_equal @product.value.price_guide, dub
+        refute_equal dub, @product.value.price_guide
       end
 
       test 'read updates attributes' do
