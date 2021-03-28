@@ -25,7 +25,7 @@ module CardmarketCLI
         @options = OptionsDeletable.new
       end
 
-      def add(key, value = key)
+      def add_to_deletable(key, value = key)
         if key.nil?
           assert_nil @deletable.send(:add_hash, [key, value])
           assert_nil @deletable.send(:add_array, key)
@@ -35,7 +35,7 @@ module CardmarketCLI
         end
       end
 
-      def delete(index, expected = index)
+      def delete_from_deletable(index, expected = index)
         if expected.nil?
           assert_nil @deletable.send(:delete_hash, index)
           assert_nil @deletable.send(:delete_array, index)
@@ -81,7 +81,7 @@ module CardmarketCLI
       end
 
       test 'add should add' do
-        add(:a)
+        add_to_deletable(:a)
         assert_equal :a, @deletable.send(:add_array, :a)
         assert_equal :a, @deletable.arrays[-1]
       end
@@ -92,22 +92,22 @@ module CardmarketCLI
       end
 
       test 'delete should delete' do
-        add(:a)
-        delete(:a)
+        add_to_deletable(:a)
+        delete_from_deletable(:a)
         refute_includes @deletable.hashes, :a
         refute_includes @deletable.arrays, :a
       end
 
       test 'delete should add to deleted' do
-        add(:a)
-        delete(:a)
+        add_to_deletable(:a)
+        delete_from_deletable(:a)
         assert_includes @deletable.deleted_hashes, :a
         assert_includes @deletable.deleted_arrays, :a
       end
 
       test 'delete should not add to deleted if not present' do
-        add(:a)
-        delete(:a)
+        add_to_deletable(:a)
+        delete_from_deletable(:a)
         refute_includes @deletable.deleted_hashes, :b
         refute_includes @deletable.deleted_hashes, nil
         refute_includes @deletable.deleted_arrays, :b
@@ -115,14 +115,14 @@ module CardmarketCLI
       end
 
       test 'delete should return nil if not present' do
-        add(:a)
-        delete(:b, nil)
+        add_to_deletable(:a)
+        delete_from_deletable(:b, nil)
       end
 
       test 'add should remove added from deleted' do
-        add(:a)
-        delete(:a)
-        add(:a)
+        add_to_deletable(:a)
+        delete_from_deletable(:a)
+        add_to_deletable(:a)
         refute_includes @deletable.deleted_hashes, :a
         refute_includes @deletable.deleted_arrays, :a
       end
@@ -142,7 +142,7 @@ module CardmarketCLI
       end
 
       test 'clear should clear added' do
-        add(:a)
+        add_to_deletable(:a)
         @deletable.send(:clear_hashes)
         @deletable.send(:clear_arrays)
         assert_empty @deletable.hashes
@@ -150,8 +150,8 @@ module CardmarketCLI
       end
 
       test 'clear should clear deleted' do
-        add(:a)
-        delete(:a)
+        add_to_deletable(:a)
+        delete_from_deletable(:a)
         @deletable.send(:clear_hashes)
         @deletable.send(:clear_arrays)
         assert_empty @deletable.deleted_hashes
