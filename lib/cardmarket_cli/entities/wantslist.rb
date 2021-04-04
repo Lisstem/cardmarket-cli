@@ -29,7 +29,7 @@ module CardmarketCLI
       end
 
       def read
-        LOGGER.debug("Reading wantslist #{name}(#{id})")
+        log_debug { "Reading wantslist #{name}(#{id})" }
         return unless id
 
         response = account.get(path)
@@ -39,14 +39,14 @@ module CardmarketCLI
       end
 
       def delete
-        LOGGER.debug("Deleting wantslist #{name}(#{id})")
+        log_debug { "Deleting wantslist #{name}(#{id})" }
         return unless id
 
         account.delete(path, body: { action: 'deleteWantslist' })
       end
 
       def update
-        LOGGER.debug("Updating wantslist #{name}(#{id})")
+        log_debug { "Updating wantslist #{name}(#{id})" }
         responses = {}
         responses[:create] = create unless id
         responses[:update] = patch if changed?
@@ -103,11 +103,12 @@ module CardmarketCLI
       class << self
         extend Deletable
         extend Unique
+        include Logging
         list_attr :instance, default: true, suffix: false
         uniq_attr :instance, hash: false
 
         def read(account, eager: true)
-          LOGGER.debug('Reading wantslists')
+          log_debug { 'Reading wantslists' }
           response = account.get(PATH_BASE)
           hash = JSON.parse(response.response_body)
           hash['wantslist']&.each do |item|
