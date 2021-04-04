@@ -2,13 +2,15 @@
 
 require 'cardmarket_cli/entities/unique'
 require 'cardmarket_cli/entities/entity'
-require 'cardmarket_cli/logger'
+require 'cardmarket_cli/logging'
 
 module CardmarketCLI
   module Entities
     ##
     # See https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Product
     class Product < Entity
+      include CardmarketCLI::Logging
+
       PARAMS = %i[en_name loc_name meta_product expansion_name rarity count_articles count_foils price_guide].freeze
       PATH_BASE = 'products'
       attr_r(*(PARAMS - [:price_guide]))
@@ -25,7 +27,7 @@ module CardmarketCLI
       end
 
       def read
-        LOGGER.debug("Reading Product #{en_name}(#{id})")
+        log_debug { "Reading Product #{en_name}(#{id})" }
         response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)['product']
         hash['expansion_name'] ||= hash['expansion']&.[]('enName')

@@ -5,13 +5,15 @@ require 'typhoeus'
 require 'oauth/request_proxy/typhoeus_request'
 require 'xmlsimple'
 require 'cgi'
-require 'cardmarket_cli/logger'
+require 'cardmarket_cli/logging'
 require 'json'
 
 module CardmarketCLI
   ##
   #
   class Account
+    include CardmarketCLI::Logging
+
     attr_reader :request_limit, :request_count
 
     def initialize(app_token, app_secret, access_token, access_token_secret, options = {})
@@ -43,7 +45,7 @@ module CardmarketCLI
       req.options[:headers].merge!(
         { 'Authorization' => oauth_helper.header + ", realm=#{make_uri(path, format: format).inspect}" }
       )
-      LOGGER.info log_request(method, uri, body)
+      log_request(method, uri, body)
       run_req(req)
     end
 
@@ -69,9 +71,11 @@ module CardmarketCLI
       response = req.run
       @request_count = get_from_header(response, /X-Request-Limit-Count: \d+/).to_i
       @request_limit = get_from_header(response, /X-Request-Limit-Max: \d+/).to_i
-      LOGGER.info("#{response.response_code} (#{response.return_code}) (Limit: "\
-                  "#{request_count || '?'}/#{request_limit || '?'})")
-      LOGGER.debug { JSON.parse(response.response_body).to_yaml }
+      log_info do
+        "#{response.response_code} (#{response.return_code}) (Limit: "\
+                  "#{request_count || '?'}/#{request_limit || '?'})"
+      end
+      log_debug { JSON.parse(response.response_body).to_yaml }
       response
     end
 
@@ -81,8 +85,8 @@ module CardmarketCLI
     end
 
     def log_request(method, uri, body)
-      LOGGER.info("#{method.to_s.capitalize}: #{uri.inspect}")
-      LOGGER.debug { body.to_yaml }
+      log_info { "#{method.to_s.capitalize}: #{uri.inspect}" }
+      log_debug { body.to_yaml }
     end
   end
 end

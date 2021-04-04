@@ -3,7 +3,7 @@
 require 'json'
 require 'yaml'
 require 'cardmarket_cli/account'
-require 'cardmarket_cli/logger'
+require 'cardmarket_cli/logging'
 require 'cardmarket_cli/entities/wantslist'
 require 'cardmarket_cli/entities/product'
 

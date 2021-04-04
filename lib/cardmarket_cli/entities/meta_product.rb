@@ -3,13 +3,15 @@
 require 'cardmarket_cli/entities/unique'
 require 'cardmarket_cli/entities/entity'
 require 'cardmarket_cli/entities/product'
-require 'cardmarket_cli/logger'
+require 'cardmarket_cli/logging'
 
 module CardmarketCLI
   module Entities
     ##
     # See https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Metaproduct
     class MetaProduct < Entity
+      include CardmarketCLI::Logging
+
       PARAMS = %i[en_name loc_name products].freeze
       PATH_BASE = 'metaproducts'
       attr_r(*(PARAMS - [:products]))
@@ -31,7 +33,7 @@ module CardmarketCLI
       end
 
       def read
-        LOGGER.debug("Reading Metaproduct #{en_name}(#{id})")
+        log_debug { "Reading Metaproduct #{en_name}(#{id})" }
         response = account.get("#{PATH_BASE}/#{id}")
         hash = JSON.parse(response.response_body)
         hash['metaproduct']&.store('product', hash['product'])

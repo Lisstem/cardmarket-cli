@@ -11,18 +11,7 @@ require 'cardmarket_test'
 require 'api_test'
 require 'assertions'
 
-##
-# redefine LOGGER because it would mess up the output
-module CardmarketCLI
-  class LoggerDummy
-    def method_missing(method, *args, &block); end
-
-    def respond_to_missing?
-      true
-    end
-  end
-  remove_const :LOGGER
-  LOGGER = LoggerDummy.new
-end
-
 Minitest::Reporters.use!
+
+# Disable logging
+CardmarketCLI::Logging.disable

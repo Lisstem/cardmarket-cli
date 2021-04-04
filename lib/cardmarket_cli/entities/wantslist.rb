@@ -4,7 +4,7 @@ require 'cardmarket_cli/entities/deletable'
 require 'cardmarket_cli/entities/changeable'
 require 'cardmarket_cli/entities/wantslist_item'
 require 'cardmarket_cli/entities/unique'
-require 'cardmarket_cli/logger'
+require 'cardmarket_cli/logging'
 
 module CardmarketCLI
   module Entities
@@ -12,6 +12,7 @@ module CardmarketCLI
     # see https://api.cardmarket.com/ws/documentation/API_2.0:Entities:Wantslist
     class Wantslist < Changeable
       extend Deletable
+      include CardmarketCLI::Logging
 
       PARAMS = %i[name].freeze
       PATH_BASE = 'wantslist'
