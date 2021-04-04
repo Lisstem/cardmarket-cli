@@ -39,9 +39,7 @@ module CardmarketCLI
       def teardown
         assert_equal @product, Product.send(:remove, @product.id)
       end
-    end
 
-    class ProductInstanceTest < ProductTest
       test 'should have reader for all attributes' do
         (Product::PARAMS - [:price_guide]).each do |param|
           assert_respond_to @product, param
@@ -88,9 +86,8 @@ module CardmarketCLI
         end
         assert_equal product, Product.send(:remove, product.id)
       end
-    end
 
-    class ProductClassTest < ProductTest
+      # Tests for class
       test 'create without id should return nil' do
         assert_nil Product.create(nil, nil)
       end
