@@ -18,40 +18,41 @@ module CardmarketCLI
       def initialize(id, product, account, params = {})
         params = { count: 1, min_condition: :PO, wish_price: 0.0, mail_alert: false, languages: [1], is_foil: nil,
                    is_altered: nil, is_playset: nil, is_signed: nil, is_first_ed: nil, from_price: nil }.merge!(params)
-        super(id, account, params.slice(*PARAMS))
+        super(id, account, params.slice(*(PARAMS - [:languages])))
+        self.languages = params[:languages]
         @product = product
       end
 
-      def to_xml_hash
-        hash = params.compact.transform_keys! { |key| key.to_s.camelize }
-        hash['idLanguage'] = hash.delete('languages')&.uniq!
-        hash['idWant'] = id
-        hash.delete_if { |_, value| value.nil? || (value.respond_to?(:empty?) && value.empty?) }
-
-        add_product_id(hash)
-        hash
+      def languages
+        params[:languages]&.uniq! || params[:languages]
       end
 
-      def add_product_id(hash)
-        return if hash['idWant']
-
-        if @product.meta?
-          hash[:idMetaproduct] = @product.id
-        else
-          hash[:idProduct] = @product.id
-        end
+      def languages=(value)
+        params[:languages] = value&.uniq || []
       end
 
       def meta?
         product.meta?
       end
 
-      def languages
-        params[:languages]&.uniq!
+      def to_xml_hash
+        hash = params.compact.transform_keys! { |key| key.to_s.camelize }
+        hash['idLanguage'] = hash.delete('languages')&.uniq || []
+        hash.delete_if { |_, value| value.respond_to?(:empty?) && value.empty? }
+        add_product_id(hash) unless hash['idWant']
+        hash
       end
 
-      def languages=(value)
-        params[:languages] = value.uniq
+      private
+
+      def add_product_id(hash)
+        return hash['idWant'] = id if id
+
+        if @product.meta?
+          hash['idMetaproduct'] = @product.id
+        else
+          hash['idProduct'] = @product.id
+        end
       end
 
       class << self
@@ -66,11 +67,14 @@ module CardmarketCLI
         private
 
         def create_product(account, hash)
-          if hash['type'] == 'metaproduct'
+          case hash['type']
+          when 'metaproduct'
             MetaProduct.from_json_hash(account, hash['metaproduct'])
-          else
+          when 'product'
             Product.from_json_hash(account, hash.slice(*%w[rarity expansionName countArticles countFoils])
                                                 .merge!(hash['product']))
+          else
+            false
           end
         end
       end
