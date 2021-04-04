@@ -63,6 +63,8 @@ module CardmarketCLI
         end
 
         def create(id, account, params = {})
+          return unless id
+
           self[id]&.send(:merge_params, params) || new(id, account, params)
         end
 

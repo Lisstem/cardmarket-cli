@@ -91,6 +91,10 @@ module CardmarketCLI
     end
 
     class ProductClassTest < ProductTest
+      test 'create without id should return nil' do
+        assert_nil Product.create(nil, nil)
+      end
+
       test 'create should create new product if it does not exist' do
         new_product = ProductTest.create_product(nil, {})
         assert new_product
@@ -113,7 +117,7 @@ module CardmarketCLI
       end
 
       test 'from_json_hash should create new product' do
-        product = Product.from_json_hash(nil, ProductTest.from_json_hash_params("#{@product.id} 4")
+        product = Product.from_json_hash(nil, ProductTest.from_json_hash_params(ProductTest.new_id)
                                                          .transform_keys!(&:to_s))
         assert product
         refute_equal @product, product

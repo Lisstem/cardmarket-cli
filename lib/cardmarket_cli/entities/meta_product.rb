@@ -65,20 +65,22 @@ module CardmarketCLI
         end
 
         def create(id, account, params = {})
+          return unless id
+
           self[id]&.send(:merge_params, params) || new(id, account, params)
         end
 
         def search_all(account, search_string, exact: false)
           start = 0
-          products = []
+          meta_products = []
           loop do
-            products.insert(-1, *search(account, search_string, start, exact: exact))
-            break unless products.count >= start += 100
+            meta_products.insert(-1, *search(account, search_string, start: start, exact: exact))
+            break unless meta_products.count >= start += 100
           end
-          products
+          meta_products
         end
 
-        def search(account, search_string, start, exact: false)
+        def search(account, search_string, start: 0, exact: false)
           response = account.get("#{PATH_BASE}/find", params: { search_all: search_string, exact: exact, start: start,
                                                                 maxResults: 100, idGame: 1, idLanguage: 1 })
           results = []
