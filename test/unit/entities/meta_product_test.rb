@@ -98,11 +98,13 @@ module CardmarketCLI
 
       test 'from_json_hash should create products' do
         params = MetaProductTest.from_json_hash_params(MetaProductTest.new_id)
-        params[:product] = (0...100).to_a.map { |n| { 'id_product' => "metaproduct #{params[:id_metaproduct]} #{n}" } }
+        params[:product] = (0...n = 100).to_a.map do |i|
+          { 'id_product' => "metaproduct #{params[:id_metaproduct]} #{i}" }
+        end
         meta_product = MetaProduct.from_json_hash(nil, params.transform_keys!(&:to_s))
         products = meta_product.products
         assert meta_product
-        assert_equal 100, products.count
+        assert_equal n, products.count
         products.each do |product|
           refute product.meta?
           assert_equal product, Product[product.id]
@@ -128,7 +130,7 @@ module CardmarketCLI
         account = mock
         response_mock = mock
         response_mock.expects(:response_body).once.returns(
-          { metaproduct: (0...80).to_a.map! { |n| { id_metaproduct: "meta product search #{n}" } } }.to_json
+          { metaproduct: (0...n = 80).to_a.map! { |i| { id_metaproduct: "meta product search #{i}" } } }.to_json
         )
         find = 'goyf'
         account.expects(:get).with("#{MetaProduct::PATH_BASE}/find", params: { search_all: 'goyf', exact: false,
@@ -137,7 +139,7 @@ module CardmarketCLI
                .once.returns(response_mock)
 
         meta_products = MetaProduct.search(account, find)
-        assert_equal 80, meta_products.count
+        assert_equal n, meta_products.count
         meta_products.each do |meta_product|
           assert_equal meta_product, MetaProduct.send(:remove, meta_product.id)
         end
@@ -147,7 +149,7 @@ module CardmarketCLI
         account = mock
         response_mock = mock
         response_mock.expects(:response_body).once.returns(
-          { metaproduct: (0...100).to_a.map! { |n| { id_metaproduct: "meta product search all #{n}" } } }.to_json
+          { metaproduct: (0...100).to_a.map! { |i| { id_metaproduct: "meta product search all #{i}" } } }.to_json
         )
         search_string = 'goyf'
         account.expects(:get).with("#{MetaProduct::PATH_BASE}/find", params: { search_all: 'goyf', exact: false,
@@ -156,7 +158,7 @@ module CardmarketCLI
                .once.returns(response_mock)
         response_mock = mock
         response_mock.expects(:response_body).once.returns(
-          { metaproduct: (100...150).to_a.map! { |n| { id_metaproduct: "product search all #{n}" } } }.to_json
+          { metaproduct: (100...n = 150).to_a.map! { |i| { id_metaproduct: "product search all #{i}" } } }.to_json
         )
         account.expects(:get).with("#{MetaProduct::PATH_BASE}/find", params: { search_all: 'goyf', exact: false,
                                                                                start: 100, maxResults: 100, idGame: 1,
@@ -164,7 +166,7 @@ module CardmarketCLI
                .once.returns(response_mock)
 
         meta_products = MetaProduct.search_all(account, search_string)
-        assert_equal 150, meta_products.count
+        assert_equal n, meta_products.count
         meta_products.each do |meta_product|
           assert_equal meta_product, MetaProduct.send(:remove, meta_product.id)
         end

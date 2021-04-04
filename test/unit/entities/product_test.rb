@@ -151,14 +151,14 @@ module CardmarketCLI
         response_mock = mock
         response_mock.expects(:response_body)
                      .once
-                     .returns({ product: (0...80).to_a.map! { |n| { id_product: "product search #{n}" } } }.to_json)
+                     .returns({ product: (0...n = 80).to_a.map! { |i| { id_product: "product search #{i}" } } }.to_json)
         find = 'goyf'
         account.expects(:get).with("#{Product::PATH_BASE}/find", params: { search_all: 'goyf', exact: false, start: 0,
                                                                            maxResults: 100, idGame: 1, idLanguage: 1 })
                .once.returns(response_mock)
 
         products = Product.search(account, find)
-        assert_equal 80, products.count
+        assert_equal n, products.count
         products.each do |product|
           assert_equal product, Product.send(:remove, product.id)
         end
@@ -178,14 +178,14 @@ module CardmarketCLI
         response_mock = mock
         response_mock.expects(:response_body)
                      .once
-                     .returns({ product: (100...150).to_a.map! { |n| { id_product: "product search all #{n}" } } }
+                     .returns({ product: (100...n = 150).to_a.map! { |i| { id_product: "product search all #{i}" } } }
                                 .to_json)
         account.expects(:get).with("#{Product::PATH_BASE}/find", params: { search_all: 'goyf', exact: false, start: 100,
                                                                            maxResults: 100, idGame: 1, idLanguage: 1 })
                .once.returns(response_mock)
 
         products = Product.search_all(account, search_string)
-        assert_equal 150, products.count
+        assert_equal n, products.count
         products.each do |product|
           assert_equal product, Product.send(:remove, product.id)
         end

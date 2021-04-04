@@ -117,12 +117,12 @@ module CardmarketCLI
       end
 
       test 'reader returns all objects' do
-        (0...100).each do |n|
-          @hash.send(:add, n)
-          @array.send(:add, n)
+        (0...n = 100).each do |i|
+          @hash.send(:add, i)
+          @array.send(:add, i)
         end
-        assert_equal (0...100).to_a.map { |n| [n.to_s, n] }.to_h, @hash.hashes
-        assert_equal (0...100).to_a, @array.arrays
+        assert_equal (0...n).to_a.map { |i| [i.to_s, i] }.to_h, @hash.hashes
+        assert_equal (0...n).to_a, @array.arrays
       end
     end
   end
