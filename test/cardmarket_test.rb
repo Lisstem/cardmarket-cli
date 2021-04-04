@@ -4,6 +4,7 @@ require 'minitest/autorun'
 
 module CardmarketCLI
   class CardmarketTest < Minitest::Test
+    parallelize_me!
     # Helper to define a test method using a String. Under the hood, it replaces
     # spaces with underscores and defines the test method.
     #

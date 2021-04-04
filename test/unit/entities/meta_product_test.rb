@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'concurrent'
-
 require_relative '../../test_helper'
 
 module CardmarketCLI
@@ -33,35 +31,35 @@ module CardmarketCLI
       end
 
       def setup
-        @meta_product = Concurrent::ThreadLocalVar.new { MetaProductTest.create_meta_product }
+        @meta_product = MetaProductTest.create_meta_product
       end
 
       def teardown
-        assert_equal @meta_product.value, MetaProduct.send(:remove, @meta_product.value.id)
+        assert_equal @meta_product, MetaProduct.send(:remove, @meta_product.id)
       end
 
       test 'should have reader for all attributes' do
         (MetaProduct::PARAMS - [:products]).each do |param|
-          assert_respond_to @meta_product.value, param
-          assert_equal param, @meta_product.value.public_method(param).call
+          assert_respond_to @meta_product, param
+          assert_equal param, @meta_product.public_method(param).call
         end
-        assert_respond_to @meta_product.value, :products
-        assert_equal [], @meta_product.value.products
+        assert_respond_to @meta_product, :products
+        assert_equal [], @meta_product.products
       end
 
       test 'should be meta' do
-        assert @meta_product.value.meta?
+        assert @meta_product.meta?
       end
 
       test 'initialize should set updated_at' do
-        assert_in_delta Time.now, @meta_product.value.updated_at
-        assert Time.now > @meta_product.value.updated_at
+        assert_in_delta Time.now, @meta_product.updated_at
+        assert Time.now > @meta_product.updated_at
       end
 
       test 'products should dub' do
-        dub = @meta_product.value.products
+        dub = @meta_product.products
         dub << :a
-        refute_equal dub, @meta_product.value.products
+        refute_equal dub, @meta_product.products
       end
 
       # TODO: add the rest of the tests
