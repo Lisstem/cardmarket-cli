@@ -1,4 +1,8 @@
 # Cardmarket CLI
+## Development suspended indefinitely
+Cardmarket has [revoked access](https://www.cardmarket.com/en/Magic/News/Statement-On-Cardmarket-Outage) to the API for private users.
+Their support said that access will be granted again after their API 3.0 is released.
+Development will be suspended at least until the access is restored.
 ## Warning
 The [Cardmarket API](https://api.cardmarket.com/ws/documentation/API_Main_Page) gives full access to your [Cardmarket](https://www.cardmarket.com/) Account.
 Including the ability to make orders.
